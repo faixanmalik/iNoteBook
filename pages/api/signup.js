@@ -3,8 +3,8 @@ import connectDb from '../../middleware/mongoose'
 const bcrypt = require('bcrypt');
 
 const handler = async (req,res)=>{
-    if (req.method == 'POST'){
 
+    if (req.method == 'POST'){
       let user = await User.findOne({email: req.body.email})
       
       if (user){
@@ -12,10 +12,13 @@ const handler = async (req,res)=>{
       }
 
       else{
+        // here 10 is salt
+        let secPassword = await bcrypt.hash(req.body.password, 10)
+
         let newUser = new User({
           name: req.body.name,
           email: req.body.email,
-          password: req.body.password,
+          password: secPassword,
           })
         await newUser.save();
 
