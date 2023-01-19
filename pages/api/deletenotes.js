@@ -6,19 +6,29 @@ import connectDb from '../../middleware/mongoose'
 const handler = async (req,res)=>{
 
     if (req.method == 'DELETE'){
+
+    try {    
         let note =  await Notes.findById(req.query.id)
+        
         if(!note){
-         return res.status(404).json({message: 'Note not found'})
-        }
+            return res.status(404).json({message: 'Note not found'})
+           }
+    
+           if(note.id != req.query.id){
+               return res.status(401).json({message: 'Not authorized'})
+           }
 
-        if(note.id != req.query.id){
-            return res.status(401).json({message: 'Not authorized'})
-        }
-
+           
         else{
             await Notes.findByIdAndDelete(req.query.id)
             return res.status(200).json({ message: 'Note Deleted' })
-        } 
+        }
+
+        
+    } catch (error) {
+        return res.status(401).json({message: 'Internal server error'})
+    }
+         
 
     }
 
